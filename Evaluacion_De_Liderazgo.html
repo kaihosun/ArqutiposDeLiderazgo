@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación de Estilo de Liderazgo</title>
+    <style>
+        :root {
+            --primary: #0056b3; /* Azul Corporativo */
+            --primary-hover: #004494;
+            --dark: #212529; /* Casi negro */
+            --gray: #6c757d;
+            --light: #f8f9fa; /* Fondo muy claro */
+            --border: #dee2e6;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #e9ecef;
+            color: var(--dark);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            width: 100%;
+            max-width: 750px;
+            padding: 2.5rem;
+            border-radius: 4px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border-top: 4px solid var(--primary);
+        }
+
+        h1 {
+            color: var(--dark);
+            text-align: center;
+            font-weight: 300;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--gray);
+            margin-bottom: 2.5rem;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--dark);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Question Styles */
+        .question-text {
+            font-size: 1.15rem;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 15px;
+            text-align: left;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            color: var(--dark);
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary);
+            background-color: #f0f8ff; /* Azul muy pálido */
+        }
+
+        .option-btn.selected {
+            background-color: var(--dark);
+            color: white;
+            border-color: var(--dark);
+        }
+
+        /* Navigation */
+        .nav-buttons {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        button.primary-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: background 0.3s;
+        }
+
+        button.primary-btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        button:disabled {
+            background-color: #adb5bd;
+            cursor: not-allowed;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            background-color: #e9ecef;
+            height: 6px;
+            border-radius: 3px;
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background-color: var(--primary);
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Results */
+        .result-screen {
+            display: none;
+            text-align: center;
+        }
+
+        .result-code {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--dark);
+            margin: 30px 0;
+            background: #f8f9fa;
+            border: 1px solid var(--border);
+            padding: 20px;
+            display: inline-block;
+            border-radius: 4px;
+        }
+
+        .error-msg {
+            color: #dc3545;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .info-data {
+            text-align: left;
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: var(--gray);
+            border-top: 1px solid var(--border);
+            padding-top: 20px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="intro-screen">
+        <h1>Evaluación de Competencias</h1>
+        <p class="subtitle">Perfil de Supervisión y Gerencia</p>
+        
+        <form id="user-form">
+            <div class="form-group">
+                <label for="fullName">Nombre Completo</label>
+                <input type="text" id="fullName" placeholder="Ingrese su nombre" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Teléfono de Contacto</label>
+                <input type="tel" id="phone" placeholder="10 dígitos" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Correo Institucional</label>
+                <input type="email" id="email" placeholder="nombre@empresa.com" required>
+            </div>
+            <div class="error-msg" id="form-error">Todos los campos son obligatorios.</div>
+            <div style="text-align: center; margin-top: 2rem;">
+                <button type="button" class="primary-btn" onclick="startTest()">Iniciar Test</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="quiz-screen" style="display: none;">
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <div id="question-container"></div>
+        <div class="nav-buttons">
+            <button class="primary-btn" id="next-btn" onclick="nextQuestion()" disabled>Siguiente</button>
+        </div>
+    </div>
+
+    <div id="result-screen" class="result-screen">
+        <h2>Evaluación Finalizada</h2>
+        <p style="color: var(--gray);">Su perfil ha sido procesado. Por favor, registre el siguiente código:</p>
+        
+        <div class="result-code" id="final-code">---</div>
+        
+        <div class="info-data">
+            <p><strong>Colaborador:</strong> <span id="result-name"></span></p>
+            <p><strong>Contacto:</strong> <span id="result-email"></span></p>
+        </div>
+        
+        <div style="margin-top: 30px;">
+            <button class="primary-btn" onclick="location.reload()" style="background-color: var(--gray);">Nueva Evaluación</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- LÓGICA DEL TEST ---
+
+    /* CÓDIGOS INTERNOS (MAPEO A EMPERADORES):
+       Augusto:       EST-01 (Estratega)
+       Trajano:       ACC-02 (Acción)
+       Marco Aurelio: REF-03 (Reflexivo)
+       Adriano:       INN-04 (Innovador)
+       Vespasiano:    PRG-05 (Pragmático)
+       Tito:          EMP-06 (Empático)
+       Diocleciano:   SIS-07 (Sistémico)
+       Constantino:   DIS-08 (Disruptivo)
+       Antonino Pío:  EST-09 (Estable)
+       Nerva:         TRA-10 (Transición/Consenso)
+    */
+
+    const questionsPool = [
+        {
+            text: "Tu equipo está bajo mucha presión y el ánimo ha caído. ¿Cómo manejas la situación?",
+            options: [
+                { text: "Uso el sentido del humor para bajar la tensión y reviso los recursos para optimizar gastos.", type: "PRG-05" }, // Vespasiano
+                { text: "Organizo los turnos y responsabilidades de nuevo para asegurar que el sistema funcione sin agotar a nadie.", type: "SIS-07" }, // Diocleciano
+                { text: "Mantengo la calma, aseguro la operación diaria y transmito seguridad y estabilidad.", type: "EST-09" }  // Antonino
+            ]
+        },
+        {
+            text: "Hay que implementar un cambio operativo urgente en el piso de trabajo. Tu enfoque es:",
+            options: [
+                { text: "Bajamos todos al área operativa. Yo lidero el cambio trabajando hombro a hombro con ellos.", type: "ACC-02" }, // Trajano
+                { text: "Planifico la estrategia desde mi oficina, delego a los líderes de área y monitoreo los KPIs.", type: "EST-01" }, // Augusto
+                { text: "Hablo con el equipo, entiendo sus preocupaciones y les ofrezco apoyo emocional durante el cambio.", type: "EMP-06" } // Tito
+            ]
+        },
+        {
+            text: "¿Qué priorizas al evaluar el desempeño de un colaborador?",
+            options: [
+                { text: "Su integridad, ética de trabajo y compromiso con los principios de la empresa.", type: "REF-03" }, // Marco Aurelio
+                { text: "Su capacidad de adaptarse a cambios radicales y proponer ideas totalmente nuevas.", type: "DIS-08" }, // Constantino
+                { text: "Su capacidad para trabajar en equipo y generar consenso con sus compañeros.", type: "TRA-10" } // Nerva
+            ]
+        },
+        {
+            text: "Te asignan un proyecto en un área que no conoces bien. ¿Qué haces primero?",
+            options: [
+                { text: "Investigo cada detalle técnico, proceso y métrica personalmente para entender cómo funciona todo.", type: "INN-04" }, // Adriano
+                { text: "Establezco objetivos agresivos de crecimiento y movilizo al equipo para alcanzarlos rápido.", type: "ACC-02" }, // Trajano
+                { text: "Analizo si el proyecto es viable a largo plazo y establezco las bases organizacionales primero.", type: "EST-01" } // Augusto
+            ]
+        },
+        {
+            text: "Un miembro del equipo cometió un error costoso pero no intencional. Tu reacción:",
+            options: [
+                { text: "Soy comprensivo. Priorizo enseñar y recuperar su confianza antes que castigar.", type: "EMP-06" }, // Tito
+                { text: "Analizo la situación fríamente: el error es parte del proceso, corregimos y seguimos.", type: "REF-03" }, // Marco Aurelio
+                { text: "Busco una solución práctica y económica para arreglar el daño. Lo hecho, hecho está.", type: "PRG-05" } // Vespasiano
+            ]
+        },
+        {
+            text: "Debes elegir a tu reemplazo temporal para unas vacaciones. ¿A quién eliges?",
+            options: [
+                { text: "A la persona que mejor conecta con todos y puede mantener la armonía en el grupo.", type: "TRA-10" }, // Nerva
+                { text: "A quien he estado entrenando meticulosamente para seguir mis procesos al pie de la letra.", type: "EST-01" }, // Augusto
+                { text: "No importa la persona, el manual de procedimientos es tan claro que cualquiera podría hacerlo.", type: "SIS-07" } // Diocleciano
+            ]
+        },
+        {
+            text: "La empresa implementa un nuevo software que cambia toda la forma de trabajar. Tú:",
+            options: [
+                { text: "Lo aprovecho para reinventar completamente cómo trabajamos y dejar atrás viejas costumbres.", type: "DIS-08" }, // Constantino
+                { text: "Lo estudio a fondo, encuentro formas creativas de usarlo y optimizo los detalles.", type: "INN-04" }, // Adriano
+                { text: "Me aseguro de que la transición sea suave y no afecte la calidad constante del trabajo actual.", type: "EST-09" } // Antonino
+            ]
+        },
+        {
+            text: "¿Cuál consideras que es un riesgo en tu estilo de gestión?",
+            options: [
+                { text: "A veces quiero controlar tantos detalles que puedo caer en el micromanagement.", type: "INN-04" }, // Adriano
+                { text: "Puedo tardar en tomar decisiones difíciles por buscar que todos estén de acuerdo.", type: "TRA-10" }, // Nerva
+                { text: "Soy muy exigente con la lealtad y los cambios; puedo ser duro con quien no se alinea.", type: "DIS-08" } // Constantino
+            ]
+        },
+        {
+            text: "Para ti, ser un buen líder significa:",
+            options: [
+                { text: "Ser un ejemplo de rectitud y cumplir con mi deber sin quejas.", type: "REF-03" }, // Marco Aurelio
+                { text: "Crear una estructura sólida que perdure cuando yo ya no esté.", type: "EST-01" }, // Augusto
+                { text: "Estar al servicio de mi equipo y asegurar su bienestar.", type: "EMP-06" } // Tito
+            ]
+        },
+        {
+            text: "En una junta semanal de resultados, tú:",
+            options: [
+                { text: "Escucho las opiniones de todos para llegar a acuerdos y evitar conflictos innecesarios.", type: "TRA-10" }, // Nerva
+                { text: "Reviso que se respete la jerarquía y que cada departamento reporte según el formato establecido.", type: "SIS-07" }, // Diocleciano
+                { text: "Motivo al equipo con energía, celebrando logros y fijando metas más altas.", type: "ACC-02" } // Trajano
+            ]
+        },
+        {
+            text: "Hay recortes de presupuesto. ¿Cuál es tu filosofía?",
+            options: [
+                { text: "Eficiencia pura. Si algo no genera valor tangible, se corta. El dinero debe rendir.", type: "PRG-05" }, // Vespasiano
+                { text: "Debemos ser estratégicos. Cortamos lo visible pero protegemos la estructura clave.", type: "EST-01" }, // Augusto
+                { text: "El bienestar del equipo es primero; recortamos todo lo demás antes de afectar a las personas.", type: "REF-03" } // Marco Aurelio
+            ]
+        },
+        {
+            text: "¿Qué tipo de colaborador valoras más en tu equipo directo?",
+            options: [
+                { text: "Alguien práctico, realista y que resuelva problemas sin gastar de más.", type: "PRG-05" }, // Vespasiano
+                { text: "Alguien con visión, capaz de ejecutar cambios radicales sin dudar.", type: "DIS-08" }, // Constantino
+                { text: "Alguien curioso, experto en su área y que siempre busque innovar.", type: "INN-04" } // Adriano
+            ]
+        },
+        {
+            text: "Tu departamento lleva meses cumpliendo metas sin problemas. ¿Qué haces?",
+            options: [
+                { text: "Mantengo el rumbo. La consistencia y la estabilidad son la clave del éxito a largo plazo.", type: "EST-09" }, // Antonino
+                { text: "Busco nuevos retos o áreas de oportunidad para expandir nuestra influencia.", type: "ACC-02" }, // Trajano
+                { text: "Documento todo y creo procesos estándar para asegurar que esto no dependa solo de mí.", type: "SIS-07" } // Diocleciano
+            ]
+        },
+        {
+            text: "Recibes una queja fuerte de un cliente o de otro departamento. Tu respuesta:",
+            options: [
+                { text: "Busco una solución diplomática inmediata para mantener la paz y la relación.", type: "EST-09" }, // Antonino
+                { text: "Demuestro con resultados y acciones contundentes que nuestro trabajo es superior.", type: "ACC-02" }, // Trajano
+                { text: "Analizo objetivamente si tienen razón, sin tomarlo personal, y corrijo si es necesario.", type: "REF-03" } // Marco Aurelio
+            ]
+        },
+        {
+            text: "¿Cómo te gustaría ser recordado por tu equipo?",
+            options: [
+                { text: "Como alguien que puso orden en el caos y dejó las finanzas sanas.", type: "PRG-05" }, // Vespasiano
+                { text: "Como un líder que transformó el departamento y lo llevó a una nueva era.", type: "DIS-08" }, // Constantino
+                { text: "Como una persona accesible, amable y que siempre ayudó a los demás.", type: "EMP-06" } // Tito
+            ]
+        },
+        {
+            text: "Detectas un proceso ineficiente que 'siempre se ha hecho así'. Tú:",
+            options: [
+                { text: "Reestructuro todo el flujo de trabajo y asigno responsables claros para cada etapa.", type: "SIS-07" }, // Diocleciano
+                { text: "Planeo el cambio con cuidado, vendiendo la idea internamente antes de imponerla.", type: "EST-01" }, // Augusto
+                { text: "Si el costo de cambiarlo es mayor al beneficio, lo dejo. Si no, lo cambio rápido.", type: "PRG-05" } // Vespasiano
+            ]
+        },
+        {
+            text: "La innovación en tu área debe ser:",
+            options: [
+                { text: "Constante. Me gusta involucrarme en el diseño de nuevas soluciones.", type: "INN-04" }, // Adriano
+                { text: "Pragmática. Solo innovamos si hay un retorno de inversión claro y rápido.", type: "PRG-05" }, // Vespasiano
+                { text: "Total. No tengo miedo de romper las reglas actuales para crear un nuevo estándar.", type: "DIS-08" } // Constantino
+            ]
+        },
+        {
+            text: "Sientes que te estás agotando (burnout). ¿Qué haces?",
+            options: [
+                { text: "Reflexiono, escribo mis pendientes para despejar la mente y recuerdo mi propósito.", type: "REF-03" }, // Marco Aurelio
+                { text: "Organizo una actividad de integración con el equipo para recargar energía juntos.", type: "EMP-06" }, // Tito
+                { text: "Visito las áreas operativas o sucursales; ver la acción real me revitaliza.", type: "INN-04" } // Adriano
+            ]
+        },
+        {
+            text: "¿Cuál es tu postura ante las políticas corporativas?",
+            options: [
+                { text: "Las respeto y promuevo. Son necesarias para el orden institucional.", type: "EST-01" }, // Augusto
+                { text: "Las sigo si funcionan, pero si estorban al progreso, las cambio radicalmente.", type: "DIS-08" }, // Constantino
+                { text: "Las cumplo con disciplina. La consistencia genera confianza.", type: "EST-09" } // Antonino
+            ]
+        },
+        {
+            text: "Al finalizar el año, tu mayor satisfacción sería:",
+            options: [
+                { text: "Haber superado todas las metas y expandido nuestras capacidades (El mejor desempeño).", type: "ACC-02" }, // Trajano
+                { text: "Haber logrado un clima laboral de colaboración y haber preparado al equipo para el futuro.", type: "TRA-10" }, // Nerva
+                { text: "Haber construido un sistema de trabajo sólido que funcionará por años.", type: "EST-01" } // Augusto
+            ]
+        }
+    ];
+
+    let currentQuestions = [];
+    let currentQuestionIndex = 0;
+    let scores = {};
+    let userData = {};
+
+    // Función para mezclar preguntas y respuestas
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function startTest() {
+        const name = document.getElementById('fullName').value;
+        const phone = document.getElementById('phone').value;
+        const email = document.getElementById('email').value;
+
+        if (!name || !phone || !email) {
+            document.getElementById('form-error').style.display = 'block';
+            return;
+        }
+
+        userData = { name, phone, email };
+        
+        // Inicializar contadores
+        scores = {
+            "EST-01": 0, "ACC-02": 0, "REF-03": 0, "INN-04": 0, "PRG-05": 0,
+            "EMP-06": 0, "SIS-07": 0, "DIS-08": 0, "EST-09": 0, "TRA-10": 0
+        };
+
+        // Clonar y mezclar
+        currentQuestions = JSON.parse(JSON.stringify(questionsPool));
+        currentQuestions = shuffleArray(currentQuestions);
+        currentQuestions.forEach(q => {
+            q.options = shuffleArray(q.options);
+        });
+
+        // Cambio de pantalla
+        document.getElementById('intro-screen').style.display = 'none';
+        document.getElementById('quiz-screen').style.display = 'block';
+        document.querySelector('.progress-container').style.display = 'block';
+
+        renderQuestion();
+    }
+
+    function renderQuestion() {
+        const qContainer = document.getElementById('question-container');
+        const qData = currentQuestions[currentQuestionIndex];
+        
+        // Barra de progreso
+        const progress = ((currentQuestionIndex) / currentQuestions.length) * 100;
+        document.getElementById('progress-bar').style.width = `${progress}%`;
+
+        let html = `
+            <div class="question-text">${currentQuestionIndex + 1}. ${qData.text}</div>
+            <div class="options">
+        `;
+
+        qData.options.forEach((opt) => {
+            html += `<button class="option-btn" onclick="selectOption(this, '${opt.type}')">${opt.text}</button>`;
+        });
+
+        html += `</div>`;
+        qContainer.innerHTML = html;
+        document.getElementById('next-btn').disabled = true;
+    }
+
+    function selectOption(btn, type) {
+        const buttons = document.querySelectorAll('.option-btn');
+        buttons.forEach(b => b.classList.remove('selected'));
+        
+        btn.classList.add('selected');
+        
+        // Guardamos selección temporal
+        btn.parentElement.dataset.selectedType = type;
+        
+        document.getElementById('next-btn').disabled = false;
+    }
+
+    function nextQuestion() {
+        const selectedBtn = document.querySelector('.option-btn.selected');
+        if (!selectedBtn) return;
+
+        const type = selectedBtn.parentElement.dataset.selectedType;
+        scores[type]++;
+
+        currentQuestionIndex++;
+
+        if (currentQuestionIndex < currentQuestions.length) {
+            renderQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    function showResults() {
+        document.getElementById('quiz-screen').style.display = 'none';
+        document.getElementById('result-screen').style.display = 'block';
+
+        // Calcular ganador
+        let maxScore = -1;
+        let winnerCode = "";
+
+        for (const [code, score] of Object.entries(scores)) {
+            if (score > maxScore) {
+                maxScore = score;
+                winnerCode = code;
+            }
+        }
+
+        document.getElementById('final-code').innerText = winnerCode;
+        document.getElementById('result-name').innerText = userData.name;
+        document.getElementById('result-email').innerText = userData.email;
+    }
+
+</script>
+
+</body>
+</html>
